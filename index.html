@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACERAMI — Satelitul Homemade sub 100 RON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12131a;
+            --bg-card: #1a1b24;
+            --accent-cyan: #5a8fc8;
+            --accent-orange: #c86840;
+            --accent-green: #60b080;
+            --accent-red: #c05060;
+            --text-primary: #c8c8c8;
+            --text-muted: #707070;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        ::selection {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 3px;
+        }
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, transparent 100%);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 80px 24px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--accent-green);
+            margin-bottom: 32px;
+            animation: fade-in-down 0.8s ease 0.2s both;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: blink 3s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+            animation: fade-in-up 0.8s ease 0.4s both;
+            color: var(--text-primary);
+        }
+
+        .hero-tagline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            animation: fade-in-up 0.8s ease 0.6s both;
+        }
+
+        .hero-tagline span {
+            color: var(--accent-orange);
+        }
+
+        /* Orbiting Satellite */
+        .satellite-orbit {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 48px auto;
+            animation: fade-in-up 0.8s ease 0.8s both;
+        }
+
+        .orbit-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 240px;
+            height: 240px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            animation: rotate-ring 30s linear infinite;
+        }
+
+        .orbit-ring::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+        }
+
+        @keyframes rotate-ring {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .satellite {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            animation: orbit 30s linear infinite;
+        }
+
+        .satellite-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2a2a3a 0%, #1a1a24 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .satellite-body::before {
+            content: 'SPRM';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .solar-panel {
+            position: absolute;
+            background: #1a237e;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .solar-panel-left {
+            width: 35px;
+            height: 25px;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .solar-panel-right {
+            width: 35px;
+            height: 25px;
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .satellite-antenna {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 15px;
+            background: var(--text-muted);
+        }
+
+        .satellite-antenna::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+        }
+
+        @keyframes orbit {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            animation: fade-in-up 0.8s ease 1.2s both;
+        }
+
+        .scroll-indicator i {
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* Animations */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-in-down {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Styling */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 28px;
+            background: var(--accent-cyan);
+        }
+
+        /* Mission Status Dashboard */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .status-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .status-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .status-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: var(--accent-green);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .live-indicator .pulse {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse-ring 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(96, 176, 128, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(96, 176, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(96, 176, 128, 0); }
+        }
+
+        .status-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-bar {
+            margin-top: 12px;
+            height: 3px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .status-bar-fill {
+            height: 100%;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        /* Mission Clock */
+        .mission-clock {
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+        }
+
+        .clock-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .clock-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+        }
+
+        .clock-date {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Technical Specs */
+        .specs-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .spec-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 100px 130px;
+            gap: 20px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.2s ease;
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .spec-row:hover {
+            background: var(--bg-secondary);
+        }
+
+        .spec-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+        }
+
+        .spec-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .spec-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .spec-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+        }
+
+        .spec-budget {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .budget-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .budget-bar-fill {
+            height: 100%;
+            background: var(--accent-cyan);
+            transition: width 0.5s ease;
+        }
+
+        .budget-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            min-width: 45px;
+            text-align: right;
+        }
+
+        /* The Rami Section */
+        .rami-section {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 40px;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 40px;
+        }
+
+        .rami-avatar {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-cyan) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .rami-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--accent-orange);
+        }
+
+        .rami-content p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .rami-stats {
+            display: flex;
+            gap: 28px;
+        }
+
+        .rami-stat {
+            text-align: center;
+        }
+
+        .rami-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--accent-cyan);
+            margin-bottom: 2px;
+        }
+
+        .rami-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 24px;
+            transition: border-color 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .feature-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 5px 10px;
+            background: rgba(96, 176, 128, 0.1);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+        }
+
+        .feature-status.warning {
+            background: rgba(200, 104, 64, 0.1);
+            color: var(--accent-orange);
+        }
+
+        /* Telemetry Feed */
+        .telemetry-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .telemetry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .telemetry-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .telemetry-title .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        .telemetry-feed {
+            height: 280px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+        }
+
+        .telemetry-line {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            animation: slide-in 0.3s ease;
+        }
+
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .telemetry-time {
+            color: var(--accent-cyan);
+            margin-right: 12px;
+        }
+
+        .telemetry-data {
+            color: var(--text-muted);
+        }
+
+        .telemetry-data .value {
+            color: var(--accent-green);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-social a {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .footer-credit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .footer-credit span {
+            color: var(--accent-orange);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-card);
+            border: 1px solid var(--accent-orange);
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--accent-orange);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .rami-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .rami-avatar {
+                margin: 0 auto;
+            }
+
+            .rami-stats {
+                justify-content: center;
+            }
+
+            .spec-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .clock-time {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo" id="logo"><img src="resc/logo.png" width="100px"></div>
+                <ul class="nav-links">
+                    <li><a href="#status">Status</a></li>
+                    <li><a href="#specs">Componente</a></li>
+                    <li><a href="#rami">Despre Rami</a></li>
+                    <li><a href="#experiments">Experimente</a></li>
+                    <li><a href="#telemetry">Telemetrie</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <img src="resc/logo.png" width="200px">
+                <h1>SPACERAMI</h1>
+                <p class="hero-tagline">
+                    Nu e un Cubesat, e un <span>Hamsat</span> • sub 100 RON • facut cu <span>Rami</span>
+                </p>
+
+                <div class="satellite-orbit">
+                    <div class="satellite">
+                        <img src="resc/satelite_animation.png" width="100px">
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <span>Scroll</span>
+                <i data-lucide="chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- Mission Status Dashboard -->
+        <section id="status">
+            <div class="container">
+                <h2 class="section-title reveal">Mission Status</h2>
+                <div class="status-grid">
+                    <div class="status-card reveal">
+                        <div class="status-header">
+                            <div class="status-icon">
+                                <i data-lucide="height"></i>
+                            </div>
+                            <div class="live-indicator">
+                                <span class="pulse"></span>
+                                LIVE
+                            </div>
+                        </div>
+                        <div class="status-value" data-count="408">0</div>
+                        <div class="status-label">Altitudine (km)</div>
+                        <div class="status-bar">
+                            <div class="status-bar-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="status-card reveal">
+                        <div class="status-header">
+                            <div class="status-icon">
+                                <i data-lucide="thermometer"></i>
+                            </div>
+                            <div class="live-indicator">
+                                <span class="pulse"></span>
+                                LIVE
+                            </div>
+                        </div>
+                        <div class="status-value" data-count="-23">0</div>
+                        <div class="status-label">Temperatura (°C)</div>
+                        <div class="status-bar">
+                            <div class="status-bar-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <div class="status-card reveal">
+                        <div class="status-header">
+                            <div class="status-icon">
+                                <i data-lucide="battery-charging"></i>
+                            </div>
+                            <div class="live-indicator">
+                                <span class="pulse"></span>
+                                LIVE
+                            </div>
+                        </div>
+                        <div class="status-value" data-count="87">0</div>
+                        <div class="status-label">Baterie (%)</div>
+                        <div class="status-bar">
+                            <div class="status-bar-fill" style="width: 87%"></div>
+                        </div>
+                    </div>
+
+                    <div class="status-card reveal">
+                        <div class="status-header">
+                            <div class="status-icon">
+                                <i data-lucide="radio"></i>
+                            </div>
+                            <div class="live-indicator">
+                                <span class="pulse"></span>
+                                LIVE
+                            </div>
+                        </div>
+                        <div class="status-value" data-count="98">0</div>
+                        <div class="status-label">Semnal (%)</div>
+                        <div class="status-bar">
+                            <div class="status-bar-fill" style="width: 98%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Clock -->
+        <section>
+            <div class="container">
+                <div class="mission-clock reveal">
+                    <div class="clock-label">Timp de la lansare</div>
+                    <div class="clock-time" id="mission-clock">00:00:00</div>
+                    <div class="clock-date" id="mission-date">--/--/----</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specs -->
+        <section id="specs">
+            <div class="container">
+                <h2 class="section-title reveal">Componente</h2>
+                <div class="specs-container reveal">
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="cpu"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>ESP32</h3>
+                            <p>Creierul satelitului - WiFi, Bluetooth, 240MHz</p>
+                        </div>
+                        <div class="spec-value">240 MHz</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 20%"></div>
+                            </div>
+                            <span class="budget-amount">20 RON</span>
+                        </div>
+                    </div>
+
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="wifi"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>Modul Radio</h3>
+                            <p>Transmisie 433MHz pentru telemetrie</p>
+                        </div>
+                        <div class="spec-value">433 MHz</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 18%"></div>
+                            </div>
+                            <span class="budget-amount">18 RON</span>
+                        </div>
+                    </div>
+
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="fan"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>4x Motoare Drone</h3>
+                            <p>Control orientare si stabilitate pe orbita</p>
+                        </div>
+                        <div class="spec-value">4x 8520</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 24%"></div>
+                            </div>
+                            <span class="budget-amount">24 RON</span>
+                        </div>
+                    </div>
+
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="target"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>Servo Parachute</h3>
+                            <p>Despliere parachute pentru revenire</p>
+                        </div>
+                        <div class="spec-value">SG90</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 8%"></div>
+                            </div>
+                            <span class="budget-amount">8 RON</span>
+                        </div>
+                    </div>
+
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="sun"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>Panouri Solare</h3>
+                            <p>4x celule solare 5V/200mA</p>
+                        </div>
+                        <div class="spec-value">5V @ 800mA</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 15%"></div>
+                            </div>
+                            <span class="budget-amount">15 RON</span>
+                        </div>
+                    </div>
+
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="battery"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>Baterie LiPo</h3>
+                            <p>1200mAh pentru autonomie pe timp de noapte</p>
+                        </div>
+                        <div class="spec-value">1200 mAh</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 10%"></div>
+                            </div>
+                            <span class="budget-amount">10 RON</span>
+                        </div>
+                    </div>
+
+                    <div class="spec-row">
+                        <div class="spec-icon">
+                            <i data-lucide="camera"></i>
+                        </div>
+                        <div class="spec-info">
+                            <h3>Camera</h3>
+                            <p>OV2640 pentru poze din spatiu</p>
+                        </div>
+                        <div class="spec-value">2 MP</div>
+                        <div class="spec-budget">
+                            <div class="budget-bar">
+                                <div class="budget-bar-fill" style="width: 5%"></div>
+                            </div>
+                            <span class="budget-amount">5 RON</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal" style="text-align: center; margin-top: 28px; color: var(--accent-green); font-family: 'Orbitron', sans-serif; font-size: 1.2rem;">
+                    TOTAL: 100 RON
+                </div>
+            </div>
+        </section>
+
+        <!-- The Rami Section -->
+        <section id="rami">
+            <div class="container">
+                <h2 class="section-title reveal">Despre Rami</h2>
+                <div class="rami-section reveal">
+                    <div class="rami-avatar"><img src="resc/rami.png" width="100px"></div>
+                    <div class="rami-content">
+                        <h3>Hamsterul care a inspirat o misiune spatiala</h3>
+                        <p>
+                            Rami e un hamster operativ pitic care alearga noaptea pe distante de pana la 8 km
+                            in rotita lui. Cand am inceput sa lucrez la proiectul Spacerami, Rami mereu statea
+                            langa mine. Asa ca l-am pus ca sursa de inspiratie —
+                            daca un hamster poate avea atata energie, si satelitul meu poate!
+                        </p>
+                        <div class="rami-stats">
+                            <div class="rami-stat">
+                                <div class="rami-stat-value">8km</div>
+                                <div class="rami-stat-label">Noapte/rotita</div>
+                            </div>
+                            <div class="rami-stat">
+                                <div class="rami-stat-value">400km</div>
+                                <div class="rami-stat-label">Orbit/Spacerami</div>
+                            </div>
+                            <div class="rami-stat">
+                                <div class="rami-stat-value">100%</div>
+                                <div class="rami-stat-label">Adorabil</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features/Experiments -->
+        <section id="experiments">
+            <div class="container">
+                <h2 class="section-title reveal">Experimente in Spatiu</h2>
+                <div class="features-grid">
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <i data-lucide="camera"></i>
+                        </div>
+                        <h3>Earth Observation</h3>
+                        <p>Camera OV2640 captureaza imagini de inalta rezolutie ale Pamantului. Testeaza ISO, expunere si unghiuri diferite.</p>
+                        <div class="feature-status">
+                            <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i>
+                            Activa
+                        </div>
+                    </div>
+
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <i data-lucide="compass"></i>
+                        </div>
+                        <h3>Attitude Control</h3>
+                        <p>4 motoare de drone controleaza orientarea satelitului. Algoritmi PID pentru stabilizare pe toate axele.</p>
+                        <div class="feature-status warning">
+                            <i data-lucide="loader" style="width: 12px; height: 12px;"></i>
+                            Calibrare
+                        </div>
+                    </div>
+
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <i data-lucide="target"></i>
+                        </div>
+                        <h3>Sistem Parachuta</h3>
+                        <p>Servo SG90 deplia parachute pentru revenire controlled. Testat la 50m inaintarea lansarii.</p>
+                        <div class="feature-status">
+                            <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i>
+                            Pregatit
+                        </div>
+                    </div>
+
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <i data-lucide="thermometer"></i>
+                        </div>
+                        <h3>Temp Monitoring</h3>
+                        <p>Senzor de temperatura masoara variatiile termice in functie de pozitia pe orbita. Date live transmise la sol.</p>
+                        <div class="feature-status">
+                            <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i>
+                            Activa
+                        </div>
+                    </div>
+
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <i data-lucide="radio-receiver"></i>
+                        </div>
+                        <h3>Ham Radio Beacon</h3>
+                        <p>Transmisie beacon in frecventa de 433MHz. Trimite mesaje in cod Morse cu coordonatele satelitului.</p>
+                        <div class="feature-status">
+                            <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i>
+                            Activa
+                        </div>
+                    </div>
+
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <i data-lucide="activity"></i>
+                        </div>
+                        <h3>Radiații SPAȚIALE</h3>
+                        <p>Detectie particule cosmice cu senzor Geiger DIY. Studiem efectele radiatiilor asupra componentelor.</p>
+                        <div class="feature-status">
+                            <i data-lucide="loader" style="width: 12px; height: 12px;"></i>
+                            Calibrare
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Telemetry Feed -->
+        <section id="telemetry">
+            <div class="container">
+                <h2 class="section-title reveal">Telemetrie Live</h2>
+                <div class="telemetry-container reveal">
+                    <div class="telemetry-header">
+                        <div class="telemetry-title">
+                            <span class="dot"></span>
+                            LIVE DATA STREAM
+                        </div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted);">
+                            Pachete: <span id="packet-count">0</span>
+                        </div>
+                    </div>
+                    <div class="telemetry-feed" id="telemetry-feed">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">SPACERAMI</div>
+                <div class="footer-social">
+                    <a href="#" aria-label="GitHub"><i data-lucide="github"></i></a>
+                    <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                    <a href="#" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-credit">
+                Built with <span>Rami</span> and 100 RON • Spacerami © 2026
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Particle System
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 80;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.5 + 0.5,
+                    speedX: (Math.random() - 0.5) * 0.2,
+                    speedY: (Math.random() - 0.5) * 0.2,
+                    opacity: Math.random() * 0.4 + 0.2
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach((p) => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(200, 200, 200, ${p.opacity})`;
+                ctx.fill();
+            });
+
+            requestAnimationFrame(drawParticles);
+        }
+
+        resizeCanvas();
+        createParticles();
+        drawParticles();
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            createParticles();
+        });
+
+        // Scroll Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 80);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.status-value[data-count]');
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.count);
+                const duration = 2000;
+                const start = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.round(eased * target);
+
+                    counter.textContent = current;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+
+                requestAnimationFrame(update);
+            });
+        }
+
+        const statusSection = document.getElementById('status');
+        const counterObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                animateCounters();
+                counterObserver.disconnect();
+            }
+        }, { threshold: 0.5 });
+
+        counterObserver.observe(statusSection);
+
+        // Mission Clock
+        function updateMissionClock() {
+            const launchDate = new Date('2026-04-15T08:00:00');
+            const now = new Date();
+            const diff = now - launchDate;
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            const timeStr = [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
+
+            document.getElementById('mission-clock').textContent = timeStr;
+            document.getElementById('mission-date').textContent = launchDate.toLocaleDateString('ro-RO', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        updateMissionClock();
+        setInterval(updateMissionClock, 1000);
+
+        // Telemetry Feed
+        const telemetryData = [
+            { label: 'ALT', value: () => (400 + Math.random() * 20 - 10).toFixed(1), unit: 'km' },
+            { label: 'TEMP', value: () => (-25 + Math.random() * 6 - 3).toFixed(1), unit: '°C' },
+            { label: 'BAT', value: () => (85 + Math.random() * 4 - 2).toFixed(0), unit: '%' },
+            { label: 'SIG', value: () => (97 + Math.random() * 3 - 1).toFixed(0), unit: '%' },
+            { label: 'MOT', value: () => Math.round(Math.random() * 4), unit: 'on' },
+            { label: 'SER', value: () => Math.random() > 0.5 ? 'ACT' : 'IDLE', unit: '' }
+        ];
+
+        let packetCount = 0;
+        const telemetryFeed = document.getElementById('telemetry-feed');
+
+        function addTelemetryLine() {
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+
+            const data = telemetryData.map(d => `${d.label}: ${d.value()}${d.unit}`).join(' | ');
+
+            const line = document.createElement('div');
+            line.className = 'telemetry-line';
+            line.innerHTML = `<span class="telemetry-time">[${time}]</span><span class="telemetry-data">${data}</span>`;
+
+            telemetryFeed.insertBefore(line, telemetryFeed.firstChild);
+
+            while (telemetryFeed.children.length > 40) {
+                telemetryFeed.removeChild(telemetryFeed.lastChild);
+            }
+
+            packetCount++;
+            document.getElementById('packet-count').textContent = packetCount;
+        }
+
+        for (let i = 0; i < 5; i++) {
+            setTimeout(addTelemetryLine, i * 300);
+        }
+
+        setInterval(addTelemetryLine, 2500);
+
+        // Easter Egg - Logo Click Counter
+        let logoClicks = 0;
+        const logo = document.getElementById('logo');
+        const toast = document.getElementById('toast');
+
+        const easterEggMessages = [
+            "Rami spune: Salutare din spatiu! 🐹🚀",
+            "Stiai ca Rami alearga 8km pe noapte?",
+            "Spacerami a trecut deasupra Romaniei de 142 de ori!",
+            "4 motoare, 1 servo, 0 greseli!",
+            "Rami e mandru de tine! Continua! 🚀"
+        ];
+
+        logo.addEventListener('click', () => {
+            logoClicks++;
+            if (logoClicks >= 5) {
+                logoClicks = 0;
+                toast.textContent = easterEggMessages[Math.floor(Math.random() * easterEggMessages.length)];
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 4000);
+            }
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
